@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Data;
+using WebApp_Desafio_BackEnd.Models;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebApp_Desafio_BackEnd.Models;
 
 namespace WebApp_Desafio_BackEnd.DataAccess
 {
@@ -20,7 +19,10 @@ namespace WebApp_Desafio_BackEnd.DataAccess
                 using (SQLiteCommand dbCommand = dbConnection.CreateCommand())
                 {
 
-                    dbCommand.CommandText = "SELECT * FROM departamentos ";
+                    dbCommand.CommandText =
+                       "SELECT departamentos.ID, " +
+                       "       departamentos.Descricao AS Departamento " +
+                       "FROM departamentos ";
 
                     dbConnection.Open();
 
@@ -47,6 +49,95 @@ namespace WebApp_Desafio_BackEnd.DataAccess
             }
 
             return lstDepartamentos;
+        }
+        public Departamento ObterDepartamento(int idDepartamento)
+        {
+            var departamento = Departamento.Empty;
+
+            DataTable dtDepartamentos = new DataTable();
+
+            using (SQLiteConnection dbConnection = new SQLiteConnection(CONNECTION_STRING))
+            {
+                using (SQLiteCommand dbCommand = dbConnection.CreateCommand())
+                {
+                    dbCommand.CommandText =
+                        "SELECT departamentos.ID, " +
+                        "       Descricao " +
+                        "FROM departamentos " +
+                        $"WHERE departamentos.ID = {idDepartamento}";
+
+                    dbConnection.Open();
+
+                    using (SQLiteDataReader dataReader = dbCommand.ExecuteReader())
+                    {
+                        if (dataReader.Read())
+                        {
+                            departamento = new Departamento();
+
+                            if (!dataReader.IsDBNull(0))
+                                departamento.ID = dataReader.GetInt32(0);
+                            if (!dataReader.IsDBNull(1))
+                                departamento.Descricao = dataReader.GetString(1);
+                        }
+                        dataReader.Close();
+                    }
+                    dbConnection.Close();
+                }
+            }
+            return departamento;
+        }
+
+        public bool GravarDepartamento(int ID, string Descricao)
+        {
+            int regsAfetados = -1;
+
+            using (SQLiteConnection dbConnection = new SQLiteConnection(CONNECTION_STRING))
+            {
+                using (SQLiteCommand dbCommand = dbConnection.CreateCommand())
+                {
+                    if (ID == 0)
+                    {
+                        dbCommand.CommandText =
+                            "INSERT INTO departamentos (Descricao)" +
+                            "VALUES (@Descricao)";
+                    }
+                    else
+                    {
+                        dbCommand.CommandText =
+                            "UPDATE departamentos " +
+                            "SET Descricao=@Descricao " +
+                            "WHERE ID=@ID ";
+                    }
+
+                    dbCommand.Parameters.AddWithValue("@ID", ID);
+                    dbCommand.Parameters.AddWithValue("@Descricao", Descricao);
+
+                    dbConnection.Open();
+                    regsAfetados = dbCommand.ExecuteNonQuery();
+                    dbConnection.Close();
+                }
+
+            }
+            return (regsAfetados > 0);
+        }
+
+        public bool ExcluirDepartamento(int idDepartamento)
+        {
+            int regsAfetados = -1;
+
+            using (SQLiteConnection dbConnection = new SQLiteConnection(CONNECTION_STRING))
+            {
+                using (SQLiteCommand dbCommand = dbConnection.CreateCommand())
+                {
+                    dbCommand.CommandText = $"DELETE FROM departamentos WHERE ID = {idDepartamento}";
+
+                    dbConnection.Open();
+                    regsAfetados = dbCommand.ExecuteNonQuery();
+                    dbConnection.Close();
+                }
+            }
+
+            return (regsAfetados > 0);
         }
     }
 }

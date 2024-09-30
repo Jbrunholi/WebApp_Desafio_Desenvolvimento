@@ -9,6 +9,7 @@ using WebApp_Desafio_FrontEnd.ViewModels;
 using WebApp_Desafio_FrontEnd.ViewModels.Enums;
 using AspNetCore.Reporting;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure;
+using AspNetCore.Reporting.ReportExecutionService;
 
 namespace WebApp_Desafio_FrontEnd.Controllers
 {
@@ -84,6 +85,15 @@ namespace WebApp_Desafio_FrontEnd.Controllers
         {
             try
             {
+                if (chamadoVM.DataAbertura < DateTime.Today)
+                {
+                    return Ok(new ResponseViewModel(
+                        $"A data de abertura não pode ser retroativa.",
+                        AlertTypes.warning,
+                        this.RouteData.Values["controller"].ToString(),
+                        nameof(this.Listar)));
+                }
+
                 var chamadosApiClient = new ChamadosApiClient();
                 var realizadoComSucesso = chamadosApiClient.ChamadoGravar(chamadoVM);
 

@@ -15,6 +15,12 @@ namespace WinForm_Desafio_Reports
         public Form1()
         {
             InitializeComponent();
+            LoadHomePage();
+        }
+
+        private void LoadHomePage()
+        {
+            webBrowser1.Navigate("http://localhost:5001/Home/Index");
         }
     }
 }

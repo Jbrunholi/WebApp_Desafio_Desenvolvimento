@@ -154,9 +154,41 @@ namespace WebApp_Desafio_API.Controllers
         {
             try
             {
-                var resultado = this.bll.ExcluirChamado(idChamado);
+                var resultado = bll.ExcluirChamado(idChamado);
 
                 return Ok(resultado);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (ApplicationException ex)
+            {
+                return StatusCode(422, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Lista todos os solicitantes
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [Route("Solicitantes")]
+        public IActionResult ListarSolicitante()
+        {
+            try
+            {
+                var solicitantes = this.bll.ListarSolicitantes();
+
+                return Ok(solicitantes);
             }
             catch (ArgumentException ex)
             {
