@@ -87,7 +87,7 @@ namespace WebApp_Desafio_FrontEnd.ApiClients.Desafio_API
                 { "idDepartamento", idDepartamento }
             };
 
-            var response = base.Delete($"{desafioApiUrl}{departamentosExcluirUrl}", querys, headers);
+            var response = base.Delete($"{desafioApiUrl}{departamentosExcluirUrl}/{idDepartamento}", querys, headers);
 
             base.EnsureSuccessStatusCode(response);
 

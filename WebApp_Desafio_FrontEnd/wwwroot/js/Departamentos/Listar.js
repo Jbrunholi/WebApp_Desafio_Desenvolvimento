@@ -53,7 +53,7 @@
 
         if (idRegistro) {
             Swal.fire({
-                text: "Tem certeza de que deseja excluir departamento " + data.Descricao + " ?",
+                text: "Tem certeza de que deseja excluir " + data.Descricao + " ?",
                 type: "warning",
                 showCancelButton: true,
             }).then(function (result) {
